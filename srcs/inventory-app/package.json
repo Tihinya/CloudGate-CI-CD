@@ -1,0 +1,23 @@
+{
+  "name": "crud-master",
+  "version": "1.0.0",
+  "description": "This API will be a CRUD (Create, Read, Update, Delete) RESTful API. It will use a PostgreSQL database. It will provide information about the movies present in the inventory and allow users to do basic operations on it.A common way to do so is to use Express which is a popular Node.js web framework. We will couple it with Sequelize, an ORM which will abstract and simplify the interactions between our API and the database.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0",
+    "pg": "^8.11.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1"
+  }
+}
