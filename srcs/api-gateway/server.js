@@ -1,32 +1,25 @@
-var amqp = require('amqplib/callback_api');
+import express from 'express';
+import bodyParser from 'body-parser';
+import yamljs from 'yamljs';
+import { config } from 'dotenv';
+import { serve, setup } from 'swagger-ui-express';
+import routes from './routes.js';
 
-const data = {
-    user_id: 3,
-    number_of_items: 5,
-    total_amount: 180
-}
+config();
 
-amqp.connect('amqp://localhost', function (error0, connection) {
-    if (error0) {
-        throw error0;
-    }
-    connection.createChannel(function (error1, channel) {
-        if (error1) {
-            throw error1;
-        }
+const app = express();
+const port = process.env.API_GATEWAY_PORT || 7000;
 
-        var queue = 'hello';
-        var msg = JSON.stringify(data);
+app.use(bodyParser.json());
 
-        channel.assertQueue(queue, {
-            durable: false
-        });
-        channel.sendToQueue(queue, Buffer.from(msg));
+const swaggerDocument = yamljs.load('./api-docs.yaml');
 
-        console.log(" [x] Sent %s", msg);
-    });
-    setTimeout(function () {
-        connection.close();
-        process.exit(0);
-    }, 500);
+app.use('/api-docs', serve, setup(swaggerDocument));
+
+app.use('/', routes);
+
+app.listen(port, () => {
+    console.log(`API Gateway running on port ${port}`);
 });
+
+export default yamljs.load; // Assuming you want to export yamljs's load function

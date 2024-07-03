@@ -1,10 +1,11 @@
 import express from 'express';
 import allMoviesRoutes from './app/routes/movies.js';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 const app = express();
-const PORT = process.env.SERVER_PORT
+const PORT = process.env.SERVER_PORT || 5000;
 
 app.use(bodyParser.json());
 app.use('/api/movies', allMoviesRoutes);

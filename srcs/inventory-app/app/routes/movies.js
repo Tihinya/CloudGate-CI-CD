@@ -19,3 +19,4 @@ router.delete('/', deleteAllMovies);
 router.delete('/:id', deleteMovieById);
 router.patch('/:id', updateMovieById);
 
+export default router;
