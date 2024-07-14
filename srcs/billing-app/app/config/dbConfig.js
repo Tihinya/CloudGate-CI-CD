@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 export const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME
+    user: process.env.BILLING_POSTGRES_USER,
+    password: process.env.BILLING_POSTGRES_PASSWORD,
+    host: process.env.BILLING_POSTGRES_HOST,
+    port: process.env.BILLING_POSTGRES_PORT,
+    database: process.env.ORDERS_DB
 };

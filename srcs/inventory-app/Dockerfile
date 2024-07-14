@@ -3,6 +3,7 @@ FROM node:22-alpine
 WORKDIR /app
 
 COPY . .
+
 COPY .env .
 
 RUN npm install

@@ -4,9 +4,9 @@ info:
   description: API Gateway for routing requests to Inventory and Billing APIs
   version: 1.0.0
 paths:
-  /api/movies/api/movies:
-# Get All Movies
-# ----------------------------------------------------------------
+  /api/movies:
+    # Get All Movies
+    # ----------------------------------------------------------------
     get:
       summary: Get all movies or filter by title
       operationId: getMovies
@@ -20,20 +20,14 @@ paths:
       responses:
         '200':
           description: A list of movies
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Movie'
         '400':
           description: Missing or invalid title parameter
         '500':
           description: Error fetching movies
         default:
           description: Unexpected error
-# Create Movie
-# ----------------------------------------------------------------
+    # Create Movie
+    # ----------------------------------------------------------------
     post:
       summary: Create a new movie
       operationId: createMovie
@@ -47,14 +41,10 @@ paths:
       responses:
         '201':
           description: Movie created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Movie'
         default:
           description: Unexpected error
-# Delete All Movies
-# ----------------------------------------------------------------
+    # Delete All Movies
+    # ----------------------------------------------------------------
     delete:
       summary: Delete all movies
       operationId: deleteAllMovies
@@ -63,9 +53,9 @@ paths:
           description: All movies deleted
         default:
           description: Unexpected error
-# Get Movie By Id
-# ----------------------------------------------------------------
-  /api/movies/api/movies/{id}:
+  # Get Movie By Id
+  # ----------------------------------------------------------------
+  /api/movies/{id}:
     get:
       summary: Get movie by id
       operationId: getMovieById
@@ -74,20 +64,16 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: A single movie
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Movie'
         '404':
           description: Movie not found
         default:
           description: Unexpected error
-# Update Movie By Id
-# ----------------------------------------------------------------
+    # Update Movie By Id
+    # ----------------------------------------------------------------
     put:
       summary: Update a single movie by id
       operationId: updateMovieById
@@ -96,27 +82,30 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         description: Updated movie object
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Movie'
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "A changed new movie"
+                description:
+                  type: string
+                  example: "Changed very short description"
       responses:
         '200':
           description: Movie updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Movie'
         '404':
           description: Movie not found
         default:
           description: Unexpected error
-# Delete Movie By Id
-# ----------------------------------------------------------------
+    # Delete Movie By Id
+    # ----------------------------------------------------------------
     delete:
       summary: Delete a single movie by id
       operationId: deleteMovieById
@@ -125,7 +114,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Movie deleted
@@ -134,8 +123,8 @@ paths:
         default:
           description: Unexpected error
 
-# BILLING
-# ----------------------------------------------------------------
+  # BILLING
+  # ----------------------------------------------------------------
 
   /api/billing:
     post:
@@ -145,14 +134,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                user_id:
-                  type: string
-                number_of_items:
-                  type: string
-                total_amount:
-                  type: string
+              $ref: '#/components/schemas/Billing'
       responses:
         '200':
           description: Billing order created
@@ -164,13 +146,21 @@ components:
     Movie:
       type: object
       properties:
-        id:
-          type: integer
-          example: 1
         title:
           type: string
-          example: "Inception"
+          example: "A new movie"
         description:
           type: string
-          example: "Christopher Nolan Film about gangsters"
-
+          example: "Very short description"
+    Billing:
+      type: object
+      properties:
+        user_id:
+          type: string
+          example: "20"
+        number_of_items:
+          type: string
+          example: "99"
+        total_amount:
+          type: string
+          example: "250"

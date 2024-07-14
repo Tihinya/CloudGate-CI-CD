@@ -8,7 +8,7 @@
     "test": "node server.js",
     "start": "node server.js"
   },
-  "author": "",
+  "author": "StepanTI",
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.7.1",

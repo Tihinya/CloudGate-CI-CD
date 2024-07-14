@@ -1,99 +1,84 @@
 version: "3.9"
 
 networks:
-  movie_streaming_network:
-    driver: bridge
-  billing_network:
-    driver: bridge
-  api_gateway_network:
+  app_network:
     driver: bridge
 
 services:
   inventory-database:
     image: postgres:16.3-alpine
     networks:
-      - movie_streaming_network
+      - app_network
     container_name: inventory-database
     ports:
-      - 5432:5432
-    env_file:
-      - .env
+      - ${INVENTORY_POSTGRES_HOST_PORT}:${INVENTORY_POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER=${INVENTORY_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${INVENTORY_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${MOVIES_DB}
     volumes:
       - ./srcs/inventory-app/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - inventory_postgres_data:/var/lib/postgresql/data
 
-  inventory-pg-admin:
-    image: dpage/pgadmin4:6.0
+  billing-database:
+    image: postgres:16.3-alpine
     networks:
-      - movie_streaming_network
-    container_name: inventory-pg-admin
-    env_file:
-      - .env
+      - app_network
+    container_name: billing-database
     ports:
-      - 5050:5050
+      - ${BILLING_POSTGRES_HOST_PORT}:${BILLING_POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER=${BILLING_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${BILLING_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${ORDERS_DB}
+    volumes:
+      - ./srcs/billing-app/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - billing_postgres_data:/var/lib/postgresql/data
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    networks:
+      - app_network
+    container_name: RabbitMQ
+    ports:
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+      - 15672:15672
 
   inventory-app:
     build:
       context: ./srcs/inventory-app
       dockerfile: Dockerfile
     networks:
-      - movie_streaming_network
-      - api_gateway_network
+      - app_network
     container_name: inventory-app
     ports:
-      - 5000:5000
+      - ${INVENTORY_HOST_PORT}:${INVENTORY_PORT}
     depends_on:
       - inventory-database
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    networks:
-      - billing_network
-      - api_gateway_network
-    container_name: rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
-
-  billing-database:
-    image: postgres:16.3-alpine
-    networks:
-      - billing_network
-    container_name: billing-database
-    ports:
-      - 5433:5432
-    env_file:
-      - .env
-    volumes:
-      - ./srcs/billing-app/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-      - billing_postgres_data:/var/lib/postgresql/data
 
   billing-app:
     build:
       context: ./srcs/billing-app
       dockerfile: Dockerfile
     networks:
-      - billing_network
-      - api_gateway_network
+      - app_network
     container_name: billing-app
     ports:
-      - 6000:6000
+      - ${BILLING_HOST_PORT}:${BILLING_PORT}
     depends_on:
       - billing-database
       - rabbitmq
 
 
-  api-gateway:
+  api-gateway-app:
     build:
       context: ./srcs/api-gateway
       dockerfile: Dockerfile
     networks:
-      - api_gateway_network
-      - movie_streaming_network
-      - billing_network
-    container_name: api-gateway
+      - app_network
+    container_name: api-gateway-app
     ports:
-      - 7000:7000
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
     depends_on:
       - inventory-app
       - billing-app
@@ -102,3 +87,5 @@ services:
 volumes:
   inventory_postgres_data:
   billing_postgres_data:
+  api-gateway-app:
+

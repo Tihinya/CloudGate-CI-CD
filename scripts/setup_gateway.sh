@@ -1,13 +1,9 @@
 #!/bin/bash
-
-# Install Node.js and npm
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install project dependencies
+# cd "$(dirname "$0")"
+# source ../.env
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt-get install nodejs
 cd /vagrant/srcs/api-gateway
-npm install
-
-# Start the API gateway using PM2
+npm install --no-optional
 sudo npm install pm2 -g
 sudo pm2 start server.js --name api-gateway
