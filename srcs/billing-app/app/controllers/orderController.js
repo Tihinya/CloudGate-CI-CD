@@ -14,7 +14,7 @@ const processMessage = async (msg) => {
     }
 };
 const connectToRabbitMQ = (retryCount = 5, delay = 5000) => {
-    amqp.connect(`amqp://${process.env.RABBITMQ_HOST}`, function (error0, connection) {
+    amqp.connect(`amqp://${process.env.RABBITMQ_HOST_ADDRESS}`, function (error0, connection) {
         if (error0) {
             console.error(`Failed to connect to RabbitMQ: ${error0.message}`);
             if (retryCount === 0) {

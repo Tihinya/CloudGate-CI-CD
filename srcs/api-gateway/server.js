@@ -8,7 +8,7 @@ import routes from './routes.js';
 config();
 
 const app = express();
-const port = process.env.API_GATEWAY_PORT || 7000;
+const PORT = process.env.API_GATEWAY_PORT;
 
 app.use(bodyParser.json());
 
@@ -18,8 +18,8 @@ app.use('/api-docs', serve, setup(swaggerDocument));
 
 app.use('/', routes);
 
-app.listen(port, () => {
-    console.log(`API Gateway running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`API Gateway running on port ${PORT}`);
 });
 
-export default yamljs.load; // Assuming you want to export yamljs's load function
+export default yamljs.load; 

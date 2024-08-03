@@ -7,7 +7,7 @@ const router = Router();
 router.use('/api/movies', inventoryProxy);
 
 router.post('/api/billing', (req, res) => {
-    const amqpUrl = `amqp://${process.env.RABBITMQ_HOST}`;
+    const amqpUrl = `amqp://${process.env.RABBITMQ_HOST_ADDRESS}`;
 
     connect(amqpUrl, function (error0, connection) {
         if (error0) {
