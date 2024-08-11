@@ -8,7 +8,7 @@ import routes from './routes.js';
 config();
 
 const app = express();
-const PORT = process.env.API_GATEWAY_PORT;
+const PORT = process.env.API_GATEWAY_PORT || 3000;
 
 app.use(bodyParser.json());
 

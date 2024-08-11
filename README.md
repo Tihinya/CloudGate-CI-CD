@@ -1,130 +1,131 @@
-# MoviesApp
+# orchestration
+
+This documentation will help you understand the architecture, setup, and usage of the movie streaming platform built using microservices infrastructure.
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Configuration](#configuration)
-- [Setup](#setup)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-  - [Inventory API](#inventory-api)
-  - [Billing API](#billing-api)
-- [FAQs](#faqs)
 
-## Introduction
-MoviesApp is a microservices-based application that includes an inventory and billing system. It leverages Docker and Docker Compose for container orchestration and RabbitMQ for messaging.
+1. [Project Overview](#1-project-overview)
+2. [Getting Started](#2-getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+   - [Initialization](#initialization)
+   - [Run](#run)
+   - [Stop](#stop)
+3. [API Documentation](#3-api-documentation)
+   - [API Gateway](#api-gateway)
+   - [Inventory API](#inventory-api)
+   - [Billing API](#billing-api)
+4. [Docker Compose](#4-k3s)
+5. [Project Organization](#5-project-organization)
 
+## 1. Project Overview <a name="1-project-overview"></a>
 
-## Architecture
-- **inventory-database**: PostgreSQL database for inventory.
-- **billing-database**: PostgreSQL database for billing.
-- **inventory-app**: Node.js application for managing inventory.
-- **billing-app**: Node.js application for handling billing operations.
-- **rabbitmq**: RabbitMQ server for message queuing.
-- **api-gateway-app**: Node.js API gateway to route requests to the appropriate services.
+The orchestrator implements a movie streaming platform with six microservices: `Inventory`, `Billing`, `RabbitMQ`, `API Gateway`, and 2 databases. The API Gateway manages communication between these services, using HTTP for `Inventory` and RabbitMQ for `Billing`. The project is organized into Kubernetes and Vagrant to make deployment simpler.
 
-## Prerequisites
+## 2. Getting Started <a name="2-getting-started"></a>
+
+### Prerequisites <a name="prerequisites"></a>
+
+Make sure you have the following installed on your machine:
+
+- Kubectl
+- Vagrant
 - Docker
-- Docker Compose
-- Node.js (for development)
 
-## Configuration
-Ensure you have an `.env` file in the root directory with the following content:
-```env
-INVENTORY_HOST="inventory-app"
-INVENTORY_PORT="8080"
-INVENTORY_HOST_PORT="8081" 
-INVENTORY_POSTGRES_USER="inventory"
-INVENTORY_POSTGRES_PASSWORD="secret"
-INVENTORY_POSTGRES_HOST="inventory-database"
-INVENTORY_POSTGRES_PORT="5432"
-INVENTORY_POSTGRES_HOST_PORT="5433" 
-MOVIES_DB="movies"
+### Installation <a name="installation"></a>
 
-BILLING_PORT="8080"
-BILLING_HOST_PORT="8082" 
-BILLING_POSTGRES_USER="billing"
-BILLING_POSTGRES_PASSWORD="secret"
-BILLING_POSTGRES_HOST="inventory-database" 
-BILLING_POSTGRES_PORT="5432" 
-BILLING_POSTGRES_HOST_PORT="5434" 
-ORDERS_DB="orders"
-
-API_GATEWAY_PORT="3000"
-
-RABBITMQ_USER="rabbitmq"
-RABBITMQ_PASS="rabbitmq"
-RABBITMQ_HOST="rabbitmq"
-RABBITMQ_PORT="5672"
-```
-## Setup
 1. Clone the repository:
 
-```bash
-git clone https://github.com/yourusername/MoviesApp.git
-cd MoviesApp
+   ```bash
+   git clone https://01.kood.tech/git/StepanTI/orchestrator
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd orchestrator
+   ```
+### Initialization<a name="initialization"></a>
+
+1. Creates required folders:
+
+   ```bash
+   mkdir -p ./k3s
+   ```
+
+2. Run vagrant:
+
+   ```bash
+   vagrant up
+   ```
+### Run<a name="run"></a>
+
+1. Creates required folders:
+
+   ```bash
+   KUBECONFIG=./k3s/k3s.yaml kubectl apply -f ./manifests/
+   ```
+### Stop<a name="stop"></a>
+
+1. Creates required folders:
+
+   ```bash
+    vagrant destroy -f
+   ```
+
+## 3. API Documentation <a name="3-api-documentation"></a>
+
+### API Gateway <a name="api-gateway"></a>
+
+The API Gateway routes requests between the `Inventory` and `Billing` services. It uses a proxy system to forward requests to the appropriate service. API documentation is available in the OpenAPI format. Refer to [http://192.168.56.10:3000/api-docs](http://192.168.56.10:3000/api-docs) for detailed API documentation.
+
+### Inventory API <a name="inventory-api"></a>
+
+The `Inventory` API is a CRUD RESTful API that provides information about movies. It uses a PostgreSQL database named `movies`. Endpoints include:
+
+- `GET /api/movies`
+- `GET /api/movies?title=[name]`
+- `POST /api/movies`
+- `DELETE /api/movies`
+- `GET /api/movies/:id`
+- `PUT /api/movies/:id`
+- `DELETE /api/movies/:id`
+
+
+### Billing API <a name="billing-api"></a>
+
+The `Billing` API processes messages received through RabbitMQ. It parses JSON messages and creates entries in the `orders` database. Endpoints include:
+
+- RabbitMQ Queue: `billing_queue`
+
+## 4. k3s <a name="4-k3s"></a>
+
+The project uses k3s to set up all microservices:
+
+- `api-gateway-app`: API Gateway.
+- `inventory-app`: `Inventory` API.
+- `inventory-database`: Contains the `movies` database.
+- `billing-app`: `Billing` API.
+- `billing-database`: Contains the `orders` database.
+- `rabbitmq`: Runs RabbitMQ service.
+
+## 5. Project Organization <a name="5-project-organization"></a>
+
+### Overall File Structure
+
+```console
+.
+├── README.md
+├── manifests
+|   ├── ...
+├── srcs
+│   ├── api-gateway
+│   │   ├── ...
+│   ├── billing-app
+│   │   ├── ...
+│   └── inventory-app
+│       ├── ...
+├── postman-config
+|   ├── ...
+└── Vagrantfile
 ```
-2. Build and start the Docker containers:
-
-```bash
-docker compose --env-file .env up --build -d
-```
-
-## Usage
-### Inventory API
-
-- **Add a new movie:**
-```bash
-curl -X POST http://localhost:7000/api/movies/ -H "Content-Type: application/json" -d '{"title": "A new movie", "description": "Very short description"}'
-```
-- **Get all movies:**
-```bash
-curl http://localhost:7000/api/movies/
-```
-### Billing API
-**Add a new billing record:**
-```bash
-curl -X POST http://localhost:7000/api/billing/ -H "Content-Type: application/json" -d '{"user_id": "20", "number_of_items": "99", "total_amount": "250"}'
-```
-## FAQs
-### What are containers and what are their advantages?
-Containers are lightweight, portable, and consistent computing environments that package an application and its dependencies together. They ensure that the application runs the same way regardless of where it is deployed.
-
-### What is the difference between containers and virtual machines?
-Containers share the host OS kernel and are more lightweight and faster to start compared to virtual machines, which run their own OS and are more resource-intensive.
-
-### What is Docker and what is it used for?
-Docker is a platform for developing, shipping, and running applications inside containers. It simplifies deployment and ensures consistency across different environments.
-
-### What is a microservices architecture?
-A microservices architecture involves designing an application as a collection of loosely coupled, independently deployable services, each responsible for a specific functionality.
-
-### Why do we use microservices architecture?
-Microservices architecture enhances scalability, flexibility, and maintainability of applications by allowing independent development, deployment, and scaling of services.
-
-### What is a queue and what is it used for?
-A queue is a data structure used to manage a list of elements in which elements are added to the end and removed from the front. In microservices, queues are used for decoupling and managing communication between services.
-
-### What is RabbitMQ?
-RabbitMQ is an open-source message broker that facilitates communication between services using the messaging protocol AMQP (Advanced Message Queuing Protocol).
-
-### What is a Dockerfile?
-A Dockerfile is a script containing instructions on how to build a Docker image. It specifies the base image, application code, dependencies, and commands to run.
-
-### Explain the instructions used in the Dockerfile.
-- FROM: Specifies the base image.
-- COPY: Copies files from the host to the Docker image.
-- RUN: Executes commands inside the Docker image during the build process.
-- CMD or ENTRYPOINT: Specifies the command to run when the container starts.
-### What is a Docker volume?
-A Docker volume is a storage mechanism for persisting data generated by and used by Docker containers. Volumes are managed by Docker and can be shared between containers.
-
-### Why do we use Docker volumes?
-Docker volumes are used to persist data beyond the lifecycle of a container and to share data between multiple containers.
-
-### What is the Docker network?
-A Docker network is a virtual network that allows containers to communicate with each other. It provides isolation, security, and ease of communication between services.
-
-### Why do we use the Docker network?
-Docker networks are used to isolate and manage communication between containers, ensuring that services can securely interact with each other without interference from the host network.

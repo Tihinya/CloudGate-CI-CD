@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 
 config();
 
-const PORT = process.env.INVENTORY_APP_PORT;
+const PORT = process.env.INVENTORY_APP_PORT || 8080;
 const HOST = process.env.INVENTORY_HOST;
 
 

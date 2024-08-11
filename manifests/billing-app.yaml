@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-app
+  labels:
+    app: billing-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billing-app
+  template:
+    metadata:
+      labels:
+        app: billing-app
+    spec:
+      containers:
+      - name: api-gateway-app
+        image: stepanti/orchestrator-billing-app:latest
+        ports:
+        - containerPort: 8080
+        env:
+          - name: BILLING_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: billing-db-secret
+                key: billing-db-username
+          - name: BILLING_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: billing-db-secret
+                key: billing-db-password
+          - name: BILLING_DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: billing-configmap
+                key: billing_database_name
+          - name: BILLING_DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: billing-configmap
+                key: billing_database_url
+          - name: RABBITMQ_HOST_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                name: rabbitmq-configmap
+                key: rabbitmq_url
+          - name: RABBITMQ_QUEUE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: rabbitmq-configmap
+                key: rabbitmq_queue_name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-app-service
+spec:
+  selector:
+    app: billing-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

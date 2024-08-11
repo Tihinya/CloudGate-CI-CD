@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 
 dotenv.config();
 const app = express();
-const PORT = process.env.INVENTORY_APP_PORT;
+const PORT = process.env.INVENTORY_APP_PORT || 8080;
 
 app.use(bodyParser.json());
 app.use('/api/movies', allMoviesRoutes);
