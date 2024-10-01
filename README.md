@@ -33,7 +33,7 @@ Make sure you have the following installed on your machine:
 1. Clone the repository:
 
    ```bash
-   git clone https://01.kood.tech/git/StepanTI/cloud-design.git
+   git clone https://github.com/Tihinya/Microservices_AWS.git
    ```
 
 2. Navigate to the project directory:
