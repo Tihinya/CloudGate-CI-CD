@@ -1,87 +1,89 @@
-# orchestration
+# cloud-designing
 
-This documentation will help you understand the architecture, setup, and usage of the movie streaming platform built using microservices infrastructure.
+This documentation will guide you through the architecture, setup, and use of the movie streaming platform developed with a microservices infrastructure.
 
 ## Table of Contents
 
-1. [Project Overview](#1-project-overview)
-2. [Getting Started](#2-getting-started)
+1. [Project Overview](#project-overview)
+2. [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
-   - [Initialization](#initialization)
-   - [Run](#run)
-   - [Stop](#stop)
-3. [API Documentation](#3-api-documentation)
+3. [API Documentation](#api-documentation)
    - [API Gateway](#api-gateway)
    - [Inventory API](#inventory-api)
    - [Billing API](#billing-api)
-4. [Docker Compose](#4-k3s)
-5. [Project Organization](#5-project-organization)
+4. [EKS](#eks)
 
-## 1. Project Overview <a name="1-project-overview"></a>
+## 1. Project Overview <a name="project-overview"></a>
 
-The orchestrator implements a movie streaming platform with six microservices: `Inventory`, `Billing`, `RabbitMQ`, `API Gateway`, and 2 databases. The API Gateway manages communication between these services, using HTTP for `Inventory` and RabbitMQ for `Billing`. The project is organized into Kubernetes and Vagrant to make deployment simpler.
+The cloud design project involves deploying and managing a microservices-based application on the Amazon Web Services (AWS) cloud platform. The application and its associated services are deployed using Terraform, while app management is handled by the ELK stack.
 
-## 2. Getting Started <a name="2-getting-started"></a>
+## 2. Getting Started <a name="getting-started"></a>
 
 ### Prerequisites <a name="prerequisites"></a>
 
 Make sure you have the following installed on your machine:
 
-- Kubectl
-- Vagrant
-- Docker
+- Terraform 
+- AWS account
+- AWS CLI
 
 ### Installation <a name="installation"></a>
 
 1. Clone the repository:
 
    ```bash
-   git clone https://01.kood.tech/git/StepanTI/orchestrator
+   git clone https://01.kood.tech/git/StepanTI/cloud-design.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd orchestrator
-   ```
-### Initialization<a name="initialization"></a>
-
-1. Creates required folders:
-
-   ```bash
-   mkdir -p ./k3s
+   cd cloud-design
    ```
 
-2. Run vagrant:
+3. Initialize cluster:
+    ```bash
+    terraform init
+    ```
 
-   ```bash
-   vagrant up
-   ```
-### Run<a name="run"></a>
+3. Create the cluster: 
+    ```bash
+    terraform apply
+    ```
 
-1. Creates required folders:
+4. Update config to allow your user to access the cluster.
+    ```bash
+    aws eks update-kubeconfig --region $(terraform output -raw region) --name $(terraform output -raw cluster_name)
+    ```
 
-   ```bash
-   KUBECONFIG=./k3s/k3s.yaml kubectl apply -f ./manifests/
-   ```
-### Stop<a name="stop"></a>
+5. Start the cluster: 
+    ```bash
+    kubectl apply -f ./manifests/
+    ```
 
-1. Creates required folders:
+6. To get the link to the app use: 
+    ```bash
+    echo "$(kubectl get svc api-gateway-app-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'):$(kubectl get svc api-gateway-app-service -o=jsonpath='{.spec.ports[0].targetPort}')/api-docs"
+    ```
 
-   ```bash
-    vagrant destroy -f
-   ```
+7. To delete the deployment use: 
+    ```bash
+    kubectl delete -f ./manifests/
+    ```
+     ```bash
+    terraform destroy
+    ```
 
-## 3. API Documentation <a name="3-api-documentation"></a>
+## 3. API Documentation <a name="api-documentation"></a>
 
 ### API Gateway <a name="api-gateway"></a>
 
-The API Gateway routes requests between the `Inventory` and `Billing` services. It uses a proxy system to forward requests to the appropriate service. API documentation is available in the OpenAPI format. Refer to [http://192.168.56.10:3000/api-docs](http://192.168.56.10:3000/api-docs) for detailed API documentation.
+The API Gateway routes requests between the Inventory and Billing services using a proxy system to forward them to the correct service. API documentation is provided in the OpenAPI format. For detailed information, visit <generated-link>.
 
 ### Inventory API <a name="inventory-api"></a>
 
-The `Inventory` API is a CRUD RESTful API that provides information about movies. It uses a PostgreSQL database named `movies`. Endpoints include:
+The Inventory API is a CRUD RESTful API that provides information about movies, utilizing a PostgreSQL database called "movies." The available endpoints are:
 
 - `GET /api/movies`
 - `GET /api/movies?title=[name]`
@@ -91,16 +93,13 @@ The `Inventory` API is a CRUD RESTful API that provides information about movies
 - `PUT /api/movies/:id`
 - `DELETE /api/movies/:id`
 
-
 ### Billing API <a name="billing-api"></a>
 
-The `Billing` API processes messages received through RabbitMQ. It parses JSON messages and creates entries in the `orders` database. Endpoints include:
+The Billing API processes messages received from RabbitMQ. It parses JSON messages and creates entries in the orders database. The relevant endpoint is the RabbitMQ queue: billing_queue.
 
-- RabbitMQ Queue: `billing_queue`
+## 4. EKS <a name="eks"></a>
 
-## 4. k3s <a name="4-k3s"></a>
-
-The project uses k3s to set up all microservices:
+The project uses EKS to set up all microservices:
 
 - `api-gateway-app`: API Gateway.
 - `inventory-app`: `Inventory` API.
@@ -108,24 +107,3 @@ The project uses k3s to set up all microservices:
 - `billing-app`: `Billing` API.
 - `billing-database`: Contains the `orders` database.
 - `rabbitmq`: Runs RabbitMQ service.
-
-## 5. Project Organization <a name="5-project-organization"></a>
-
-### Overall File Structure
-
-```console
-.
-├── README.md
-├── manifests
-|   ├── ...
-├── srcs
-│   ├── api-gateway
-│   │   ├── ...
-│   ├── billing-app
-│   │   ├── ...
-│   └── inventory-app
-│       ├── ...
-├── postman-config
-|   ├── ...
-└── Vagrantfile
-```

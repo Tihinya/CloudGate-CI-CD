@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: inventory-database
   labels:
@@ -35,6 +35,8 @@ spec:
               configMapKeyRef:
                 name: inventory-configmap
                 key: inventory_database_name
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata 
         volumeMounts:
           - name: init-scripts
             mountPath: /docker-entrypoint-initdb.d/init.sql
@@ -69,8 +71,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: inventory-db-volume
 spec:
+  storageClassName: ebs-sc
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 20Gi

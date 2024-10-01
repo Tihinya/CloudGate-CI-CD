@@ -1,0 +1,22 @@
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: ebs-sc
+# parameters:
+#   type: gp3
+# provisioner: ebs.csi.aws.com
+# volumeBindingMode: WaitForFirstConsumer
+# recka
+
+
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-sc
+parameters:
+  type: gp3
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
