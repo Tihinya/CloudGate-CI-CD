@@ -1,41 +1,38 @@
+variable "environment" {
+  type    = string
+  default = null
+}
+
 variable "region_code" {
   description = "Value of the app region"
-  type        = string
-  default     = "eu-central-1"
+  default     = "eu-north-1"
 }
 
-variable "cluster_name" {
-  description = "Value of the cluster name of the cluster"
-  type        = string
-  default     = "cloud-design-cluster"
+variable "api_gateway_public_port" {
+  default = 3000
 }
 
-variable "cluster_role_name" {
-  description = "Value of the cluster role name of the cluster"
-  type        = string
-  default     = "eks-cluster-role"
+variable "API_GATEWAY_APP_IMAGE" {
+  type    = string
+  default = null
 }
 
-variable "nodegroup_role_name" {
-  description = "Value of the nodegroup role name of the cluster"
-  type        = string
-  default     = "eks-nodegroup-role"
+variable "INVENTORY_APP_IMAGE" {
+  type    = string
+  default = null
 }
 
-variable "nodegroup_name" {
-  description = "Value of the nodegroup name of the cluster"
-  type        = string
-  default     = "cloud-design-nodegroup"
+variable "INVENTORY_DB_IMAGE" {
+  type    = string
+  default = null
 }
 
-variable "ebs_csi_driver_name" {
-  description = "Value of the EBS name of the cluster"
-  type        = string
-  default     = "cloud-design-ebs-csi-driver"
+variable "BILLING_APP_IMAGE" {
+  type    = string
+  default = null
 }
 
-variable "ebs_csi_driver_encryption_name" {
-  description = "Value of the EBS encryption name of the cluster"
-  type        = string
-  default     = "cloud-design-ebs-csi-driver-encryption"
+variable "BILLING_DB_IMAGE" {
+  type    = string
+  default = null
 }

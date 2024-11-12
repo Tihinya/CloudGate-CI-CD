@@ -12,7 +12,7 @@ const PORT = process.env.API_GATEWAY_PORT || 3000;
 
 app.use(bodyParser.json());
 
-const swaggerDocument = yamljs.load('./swagger.yaml');
+const swaggerDocument = yamljs.load('./app/swagger.yaml');
 
 app.use('/api-docs', serve, setup(swaggerDocument));
 

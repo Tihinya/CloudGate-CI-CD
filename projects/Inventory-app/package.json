@@ -2,11 +2,12 @@
   "name": "crud-master",
   "version": "1.0.0",
   "description": "This API will be a CRUD (Create, Read, Update, Delete) RESTful API. It will use a PostgreSQL database. It will provide information about the movies present in the inventory and allow users to do basic operations on it.A common way to do so is to use Express which is a popular Node.js web framework. We will couple it with Sequelize, an ORM which will abstract and simplify the interactions between our API and the database.",
-  "main": "server.js",
+  "main": "app/server.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app/server.js",
+    "build": "webpack --mode production",
+    "lint": "eslint app"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,12 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21"
+    "@eslint/js": "^9.13.0",
+    "@types/express": "^4.17.21",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   }
 }

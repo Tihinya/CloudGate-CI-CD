@@ -1,7 +1,6 @@
 {
-  "name": "api-gateway",
+  "name": "billing-app",
   "version": "1.0.0",
-  "description": "API Gateway for routing requests to Inventory and Billing APIs",
   "main": "app/server.js",
   "type": "module",
   "scripts": {
@@ -9,25 +8,22 @@
     "build": "webpack --mode production",
     "lint": "eslint app"
   },
-  "author": "StepanTI",
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.10.4",
+    "amqplib": "^0.10.3",
     "dotenv": "^16.4.5",
-    "express": "^4.17.1",
-    "http-proxy-middleware": "^1.0.6",
-    "swagger-ui-express": "^4.1.6",
-    "yamljs": "^0.3.0"
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0",
+    "pg": "^8.11.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@types/amqplib": "^0.10.5",
     "@types/express": "^4.17.21",
-    "@types/swagger-ui-express": "^4.1.6",
-    "@types/yamljs": "^0.2.34",
     "eslint": "^9.13.0",
     "globals": "^15.11.0",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
-  }
+  },
+  "description": ""
 }

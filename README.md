@@ -33,47 +33,26 @@ Make sure you have the following installed on your machine:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Tihinya/Microservices_AWS.git
+   git clone https://01.kood.tech/git/StepanTI/code-keeper.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd cloud-design
+   cd code-keeper
    ```
 
-3. Initialize cluster:
-    ```bash
-    terraform init
-    ```
+3. Run code-keeper.sh script to initialize Ansible vault variables and create the infrastructure: 
 
-3. Create the cluster: 
-    ```bash
-    terraform apply
-    ```
+   - Initialize variables
+   ```makefile
+   make init
+   ```
 
-4. Update config to allow your user to access the cluster.
-    ```bash
-    aws eks update-kubeconfig --region $(terraform output -raw region) --name $(terraform output -raw cluster_name)
-    ```
-
-5. Start the cluster: 
-    ```bash
-    kubectl apply -f ./manifests/
-    ```
-
-6. To get the link to the app use: 
-    ```bash
-    echo "$(kubectl get svc api-gateway-app-service -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}'):$(kubectl get svc api-gateway-app-service -o=jsonpath='{.spec.ports[0].targetPort}')/api-docs"
-    ```
-
-7. To delete the deployment use: 
-    ```bash
-    kubectl delete -f ./manifests/
-    ```
-     ```bash
-    terraform destroy
-    ```
+   - Create the infrastructure
+   ```makefile
+   make create
+   ```
 
 ## 3. API Documentation <a name="api-documentation"></a>
 
